@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2">
+    <persistence-unit name="gestionCahierDette">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.example.entities.Client</class> <!-- Vos entités -->
+        <properties>
+            <!-- Configuration de la source de données -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/> <!-- Crée ou met à jour la base de données -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+
+            <!-- Gérer les transactions -->
+            <property name="javax.persistence.transactionType" value="RESOURCE_LOCAL"/>
+            <property name="hibernate.transaction.coordinator_class" value="org.hibernate.resource.transaction.backend.jta.CMTTransactionFactory"/>
+        </properties>
+    </persistence-unit>
+</persistence>

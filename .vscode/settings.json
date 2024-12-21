@@ -1,0 +1,223 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.debug.settings.onBuildFailureProceed": true
+}
+
+
+
+
+// Fichier settings.json
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.project.referencedLibraries": [
+      "lib/**/*.jar"
+    ]
+  }
+  
+  
+  
+  /* Package: entities */
+  // Fichier Client.java
+  package com.example.entities;
+  
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public class Client {
+      private String surname;
+      private String phone;
+      private String address;
+      private double debtTotal;
+  }
+  
+  // Fichier User.java
+  package com.example.entities;
+  
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public class User {
+      private String email;
+      private String login;
+      private String password;
+      private String role; // "Admin", "Boutiquier", or "Client"
+  }
+  
+  // Fichier Article.java
+  package com.example.entities;
+  
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public class Article {
+      private String name;
+      private int stockQuantity;
+      private double price;
+  }
+  
+  // Fichier Dette.java
+  package com.example.entities;
+  
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  
+  import java.util.Date;
+  import java.util.List;
+  
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public class Dette {
+      private Date date;
+      private double amount;
+      private double paidAmount;
+      private double remainingAmount;
+      private List<Article> articles;
+  }
+  
+  // Fichier Paiement.java
+  package com.example.entities;
+  
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  
+  import java.util.Date;
+  
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public class Paiement {
+      private Date date;
+      private double amount;
+  }
+  
+  /* Package: repositories */
+  // Fichier IRepository.java
+  package com.example.repositories;
+  
+  import java.util.List;
+  
+  public interface IRepository<T> {
+      void save(T entity);
+      T findById(String id);
+      List<T> findAll();
+  }
+  
+  // Fichier ClientRepository.java
+  package com.example.repositories;
+  
+  import com.example.entities.Client;
+  import java.util.ArrayList;
+  import java.util.List;
+  
+  public class ClientRepository implements IRepository<Client> {
+      private List<Client> clients = new ArrayList<>();
+  
+      @Override
+      public void save(Client client) {
+          clients.add(client);
+      }
+  
+      @Override
+      public Client findById(String phone) {
+          return clients.stream().filter(c -> c.getPhone().equals(phone)).findFirst().orElse(null);
+      }
+  
+      @Override
+      public List<Client> findAll() {
+          return clients;
+      }
+  }
+  
+  /* Package: services */
+  // Fichier IClientService.java
+  package com.example.services;
+  
+  import com.example.entities.Client;
+  import java.util.List;
+  
+  public interface IClientService {
+      void createClient(Client client);
+      List<Client> listClients();
+      Client searchClient(String phone);
+  }
+  
+  // Fichier ClientServiceImpl.java
+  package com.example.services;
+  
+  import com.example.entities.Client;
+  import com.example.repositories.ClientRepository;
+  import java.util.List;
+  
+  public class ClientServiceImpl implements IClientService {
+      private final ClientRepository clientRepository;
+  
+      public ClientServiceImpl(ClientRepository clientRepository) {
+          this.clientRepository = clientRepository;
+      }
+  
+      @Override
+      public void createClient(Client client) {
+          clientRepository.save(client);
+      }
+  
+      @Override
+      public List<Client> listClients() {
+          return clientRepository.findAll();
+      }
+  
+      @Override
+      public Client searchClient(String phone) {
+          return clientRepository.findById(phone);
+      }
+  }
+  
+  /* Package: views */
+  // Fichier ClientView.java
+  package com.example.views;
+  
+  import com.example.entities.Client;
+  import com.example.services.IClientService;
+  
+  import java.util.Scanner;
+  
+  public class ClientView {
+      private final IClientService clientService;
+  
+      public ClientView(IClientService clientService) {
+          this.clientService = clientService;
+      }
+  
+      public void createClient() {
+          Scanner scanner = new Scanner(System.in);
+          System.out.println("Enter surname:");
+          String surname = scanner.nextLine();
+          System.out.println("Enter phone:");
+          String phone = scanner.nextLine();
+          System.out.println("Enter address:");
+          String address = scanner.nextLine();
+  
+          Client client = new Client(surname, phone, address, 0);
+          clientService.createClient(client);
+          System.out.println("Client created successfully.");
+      }
+  
+      public void listClients() {
+          clientService.listClients().forEach(client -> System.out.println(client));
+      }
+  }
+  
